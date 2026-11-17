@@ -23,7 +23,7 @@ function glsl(s) {
 }
 
 (async () => {
-  let js = ['geo.js', 'atmo.js', 'life.js', 'ctrl.js', 'main.js'].map(rd).join('\n');
+  let js = ['geo.js', 'atmo.js', 'life.js', 'benth.js', 'ctrl.js', 'main.js'].map(rd).join('\n');
   js = js.replace(/\/\*glsl\*\/`([^`]*)`/g, (m, g) => {
     if (g.includes('${')) throw new Error('interpolation in glsl literal');
     return '`' + glsl(g) + '`';

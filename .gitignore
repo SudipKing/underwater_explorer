@@ -2,3 +2,5 @@ node_modules/
 package-lock.json
 .claude/
 serve.js
+dbg.js
+p1/

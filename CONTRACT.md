@@ -81,3 +81,29 @@ so GEO and ATMO must compile in a vertex shader too (no dFdx/fwidth/discard/gl_F
   no recursion, `const` initialisers must be constant expressions. Be meticulous — you cannot compile-test.
 - Stay inside your byte budget (source after comment/whitespace stripping): geo 6 KB, atmo 12 KB, life 11 KB, ctrl+ui 12 KB.
 - Performance target: 120+ FPS on a desktop GPU at High, playable on integrated GPUs at Low.
+
+## Phase 2 additions
+- New shared uniform  (declared by the host header): x = cam.sub (smoothed submerged-ness 0..1), y = seconds since the
+  last water-surface crossing (large if never), z = player speed m/s, w = +1 if that crossing was upward into air, -1 if downward, 0 if none.
+  ctrl.js owns  (sim time of last crossing) and  (its direction, +1/-1).
+- New module  (benthic ecosystem), built between life.js and ctrl.js: ,  — same GL state
+  contract as lifeDraw; called just before lifeDraw. GLSL helper prefix , JS global prefix .
+- The world gains an abyssal trench down to about y = -120. Total index.html budget is now 65 KB.
+- Stripped byte budgets: geo 9 KB, atmo 9.5 KB, life 11 KB, benth 12 KB, ctrl+ui 11.5 KB.
+- Do not run build.js, git, servers or a browser; the integrator does. Measure your own stripped size with a throwaway script.
+
+## Phase 2 additions (upgrade pass — everything above still applies)
+- New shared uniform `uniform vec4 uC` (declared by the host header, do not redeclare): x = cam.sub (smoothed submerged-ness 0..1),
+  y = seconds since the last water-surface crossing (large if never), z = player speed m/s,
+  w = +1 if that crossing was upward into air, -1 if downward, 0 if none yet.
+  ctrl.js owns `cam.tx` (sim time `t` of the last crossing) and `cam.td` (its direction, +1 / -1) that feed it.
+- New module `src/benth.js` (benthic ecosystem), built between life.js and ctrl.js: `benthInit()`, `benthDraw(t,dt)` — same GL state
+  contract as lifeDraw; called just before lifeDraw. GLSL helper prefix `b`, JS global prefix `bn`.
+- The world gains an abyssal trench down to about y = -120. Total index.html budget is now 65 KB.
+- Stripped byte budgets: geo 9 KB, atmo 9.5 KB, life 11 KB, benth 12 KB, ctrl+ui 11.5 KB.
+- Do not run build.js, git, servers or a browser; the integrator does. Measure your own stripped size with a throwaway script.
+- Existing world layout (must stay valid): seabed y≈-28; rock massif radius ~90 at the origin, plateau y≈-5; SPAWN [0,-7,128,0] facing -Z;
+  grand hall on x=0 from z=100 to z=-24 (12 m wide, floor -30, ceiling -20, colonnade x=±3.8 every 8 m); tier-2 ruin corridors on
+  x,z=±18,±54 (floor -30); coral-cave tiers at y≈-15 and y≈-48; Oculus shaft (0,-26) r=7 from y=-52 up to open water; Well (-54,-20) r=3.5;
+  grand stair from (0,-30,-28) down to (0,-48,-69); grottoes Azure (52,-19,-52) r9, Orchid (-52,-50,-26) r13, Emerald (52,-38,26) r12,
+  Amber (0,-50,-80) r12; surface-breaking spires at (±17,88) and (-34,-8).
